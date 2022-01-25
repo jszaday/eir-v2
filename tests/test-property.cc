@@ -12,9 +12,9 @@ class example {
  public:
   int num_assigns = 0;
 
-  EIR_PROPERTY_ACCESSOR(trivial);
+  EIR_PROPERTY_ACCESSOR(example, trivial);
 
-  EIR_PROPERTY_ACCESSOR(non_trivial);
+  EIR_PROPERTY_ACCESSOR(example, non_trivial);
 
   void on_assign(void) {
     this->num_assigns += 1;
@@ -43,6 +43,11 @@ int main(void) {
 
   eir::xml_writer w(std::cout);
   data.write_to(w);
+
+  auto& fields = eir::fields_of<example>();
+  for (auto& [name, _] : fields) {
+    std::cout << name << std::endl;
+  }
 
   return 0;
 }

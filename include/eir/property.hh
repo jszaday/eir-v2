@@ -1,13 +1,17 @@
 #ifndef EIR_PROPERTY_HH
 #define EIR_PROPERTY_HH
 
+#include <eir/serializable.hh>
 #include <experimental/type_traits>
 #include <type_traits>
 #include <utility>
 
-#define EIR_PROPERTY_ACCESSOR(name)                      \
-  const auto& name(void) const { return this->name##_; } \
-  auto name(void) { return eir::property_proxy_(this, &(this->name##_)); }
+#define EIR_PROPERTY_ACCESSOR(class, name)                                 \
+  const auto& name(void) const { return this->name##_; }                   \
+  auto name(void) { return eir::property_proxy_(this, &(this->name##_)); } \
+  void EIR_SERIALIZE_PROPERTY(name)(void) {}                               \
+  inline static auto name##_registrar_ =                                   \
+      eir::field_registrar_(#name, &class ::EIR_SERIALIZE_PROPERTY(name));
 
 namespace eir {
 
