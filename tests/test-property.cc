@@ -33,21 +33,8 @@ int main(void) {
 
   assert(ex.num_assigns == 3);
 
-  eir::xml_data data;
-  auto ins = data.entities.emplace("example", eir::xml_data());
-  auto& example_data = std::get<eir::xml_data>((ins.first)->second);
-
-  example_data.entities.emplace("trivial", std::to_string(ex.trivial()));
-  example_data.entities.emplace("non_trivial",
-                                std::to_string(**(ex.non_trivial())));
-
   eir::xml_writer w(std::cout);
-  data.write_to(w);
-
-  auto& fields = eir::fields_of<example>();
-  for (auto& [name, _] : fields) {
-    std::cout << name << std::endl;
-  }
+  w | std::tie("example", ex);
 
   return 0;
 }
