@@ -12,8 +12,11 @@
   void EIR_CONVERT_PROPERTY(name)(eir::converter & c) {                        \
     c | std::tie(#name, this->name##_);                                        \
   }                                                                            \
-  inline static auto name##_registrar_ =                                       \
-      eir::field_registrar_(#name, &class ::EIR_CONVERT_PROPERTY(name));
+  inline static auto name##_registrar_ = eir::field_registrar_<class>(         \
+      #class, #name, &class ::EIR_CONVERT_PROPERTY(name));
+
+#define EIR_CLASS_STUB(class)                                                  \
+  inline static auto class##_registrar_ = eir::stub_registrar_<class>(#class);
 
 namespace eir {
 

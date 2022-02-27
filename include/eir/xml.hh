@@ -20,10 +20,22 @@ template <typename OS> class xml_writer : public converter {
 public:
   xml_writer(OS &os) : converter(direction::OUTPUT), os_(os), num_tabs_(0) {}
 
-  xml_writer &start_tag(const std::string &s) {
+  // TODO ( implement this! )
+  static std::string escape(const std::string &value) { return value; }
+
+  xml_writer &start_tag(const std::string &s,
+                        std::map<std::string, std::string> *attributes) {
     this->write_tabs_();
 
-    this->os_ << '<' << s << ">\n";
+    this->os_ << '<' << s;
+
+    if (attributes) {
+      for (auto &pair : *attributes) {
+        this->os_ << ' ' << pair.first << "=\"" << escape(pair.second) << '"';
+      }
+    }
+
+    this->os_ << ">\n";
 
     num_tabs_ += 1;
 
@@ -48,7 +60,11 @@ public:
     return *this;
   }
 
-  virtual void enter(const char *field) override { this->start_tag(field); }
+  virtual void
+  enter(const char *field,
+        std::map<std::string, std::string> *properties = nullptr) override {
+    this->start_tag(field, properties);
+  }
 
   virtual void leave(const char *field) override { this->end_tag(field); }
 

@@ -32,9 +32,13 @@ class canadian_goose : public bird {
   virtual const char* noise(void) const override { return "honk"; }
 };
 
+EIR_CLASS_STUB(canadian_goose);
+
 class lion : public quadraped {
   virtual const char* noise(void) const override { return "roar"; }
 };
+
+EIR_CLASS_STUB(lion);
 
 class dog : public quadraped {
  private:
