@@ -1,74 +1,61 @@
 #ifndef EIR_XML_WRITER_HH
 #define EIR_XML_WRITER_HH
 
+#include <tinyxml2/tinyxml2.h>
+
+#include <cassert>
+#include <cstring>
 #include <eir/converter.hh>
-#include <map>
-#include <string>
+#include <istream>
+#include <iterator>
+#include <stack>
 
 namespace eir {
-template <typename OS> class xml_writer : public converter {
-  OS &os_;
-  int num_tabs_;
+class xml_writer : public converter {
+  tinyxml2::XMLDocument doc_;
+  std::stack<std::pair<const char *, tinyxml2::XMLElement *>> stack_;
 
-  void write_tabs_(void) {
-    for (auto i = 0; i < num_tabs_; i++) {
-      this->os_ << '\t';
+ public:
+  xml_writer(void) : converter(direction::OUTPUT) {}
+
+  virtual void enter(
+      const char *field,
+      std::map<std::string, std::string> *attributes = nullptr) override {
+    auto *elt = this->doc_.NewElement(field);
+
+    if (this->stack_.empty()) {
+      (this->doc_).InsertEndChild(elt);
+    } else {
+      auto &top = this->stack_.top();
+      (top.second)->InsertEndChild(elt);
     }
-  }
-
-public:
-  xml_writer(OS &os) : converter(direction::OUTPUT), os_(os), num_tabs_(0) {}
-
-  // TODO ( implement this! )
-  static std::string escape(const std::string &value) { return value; }
-
-  xml_writer &start_tag(const std::string &s,
-                        std::map<std::string, std::string> *attributes) {
-    this->write_tabs_();
-
-    this->os_ << '<' << s;
 
     if (attributes) {
-      for (auto &pair : *attributes) {
-        this->os_ << ' ' << pair.first << "=\"" << escape(pair.second) << '"';
+      for (auto &[key, val] : *attributes) {
+        elt->SetAttribute(key.c_str(), val.c_str());
       }
     }
 
-    this->os_ << ">\n";
-
-    num_tabs_ += 1;
-
-    return *this;
+    this->stack_.emplace(field, elt);
   }
 
-  xml_writer &writeln(const std::string &s) {
-    this->write_tabs_();
-
-    this->os_ << s << '\n';
-
-    return *this;
+  virtual void leave(const char *field) override {
+    auto &top = this->stack_.top();
+    assert(strcmp(field, top.first) == 0);
+    this->stack_.pop();
   }
 
-  xml_writer &end_tag(const std::string &s) {
-    num_tabs_ -= 1;
-
-    this->write_tabs_();
-
-    this->os_ << "</" << s << ">\n";
-
-    return *this;
+  virtual void write(const std::string &val) override {
+    auto &top = this->stack_.top();
+    (top.second)->SetText(val.c_str());
   }
 
-  virtual void
-  enter(const char *field,
-        std::map<std::string, std::string> *attributes = nullptr) override {
-    this->start_tag(field, attributes);
+  std::string str(void) const {
+    tinyxml2::XMLPrinter printer;
+    (this->doc_).Print(&printer);
+    return printer.CStr();
   }
-
-  virtual void leave(const char *field) override { this->end_tag(field); }
-
-  virtual void write(const std::string &val) override { this->writeln(val); }
 };
-} // namespace eir
+}  // namespace eir
 
 #endif

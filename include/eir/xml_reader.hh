@@ -8,10 +8,7 @@
 #include <eir/converter.hh>
 #include <istream>
 #include <iterator>
-#include <map>
 #include <stack>
-#include <string>
-#include <variant>
 
 namespace eir {
 class xml_reader : public converter {
@@ -44,7 +41,7 @@ class xml_reader : public converter {
 
   virtual std::string read(void) override {
     auto &top = this->stack_.top();
-    return (top.second)->Value();
+    return (top.second)->GetText();
   }
 
   virtual void enter(

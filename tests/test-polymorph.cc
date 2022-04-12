@@ -11,7 +11,7 @@ class animal {
   virtual ~animal() {}
 
   virtual int num_legs(void) const = 0;
-  virtual const char* noise(void) const = 0;
+  virtual std::string noise(void) const = 0;
 
   template <typename OS>
   void make_noise(OS& os) const {
@@ -30,13 +30,13 @@ class quadraped : public animal {
 class bird : public biped {};
 
 class canadian_goose : public bird {
-  virtual const char* noise(void) const override { return "honk"; }
+  virtual std::string noise(void) const override { return "honk"; }
 };
 
 EIR_CLASS_STUB(canadian_goose);
 
 class lion : public quadraped {
-  virtual const char* noise(void) const override { return "roar"; }
+  virtual std::string noise(void) const override { return "roar"; }
 };
 
 EIR_CLASS_STUB(lion);
@@ -51,7 +51,11 @@ class dog : public quadraped {
 
   EIR_PROPERTY_ACCESSOR(dog, breed);
 
-  virtual const char* noise(void) const override { return "bark"; }
+  virtual std::string noise(void) const override {
+    std::stringstream ss;
+    ss << this->breed_ << " bark";
+    return ss.str();
+  }
 };
 
 int main(void) {
@@ -66,12 +70,10 @@ int main(void) {
     animal->make_noise(std::cout);
   }
 
-  std::stringstream ss;
-
-  eir::xml_writer w(ss);
+  eir::xml_writer w;
   w | std::tie("animals", animals);
 
-  auto xml = ss.str();
+  auto xml = w.str();
 
   std::vector<std::unique_ptr<animal>> clones;
   eir::xml_reader r(xml.c_str());

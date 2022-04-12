@@ -33,8 +33,10 @@ int main(void) {
 
   assert(ex.num_assigns == 3);
 
-  eir::xml_writer w(std::cout);
+  eir::xml_writer w;
   w | std::tie("example", ex);
+
+  std::cout << w.str();
 
   return 0;
 }
