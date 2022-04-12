@@ -1,5 +1,5 @@
-#ifndef EIR_XML_HH
-#define EIR_XML_HH
+#ifndef EIR_XML_WRITER_HH
+#define EIR_XML_WRITER_HH
 
 #include <eir/converter.hh>
 #include <map>

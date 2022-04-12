@@ -1,6 +1,6 @@
 #include <cassert>
 #include <eir/property.hh>
-#include <eir/xml.hh>
+#include <eir/xml_writer.hh>
 #include <iostream>
 #include <memory>
 #include <vector>
