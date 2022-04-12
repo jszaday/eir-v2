@@ -72,7 +72,6 @@ int main(void) {
   w | std::tie("animals", animals);
 
   auto xml = ss.str();
-  std::cout << xml;
 
   std::vector<std::unique_ptr<animal>> clones;
   eir::xml_reader r(xml.c_str());
@@ -82,6 +81,9 @@ int main(void) {
   for (auto& animal : clones) {
     animal->make_noise(std::cout);
   }
+
+  std::cout << "resulting xml:" << std::endl;
+  std::cout << xml;
 
   return 0;
 }
