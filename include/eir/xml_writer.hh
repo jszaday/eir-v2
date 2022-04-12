@@ -4,7 +4,6 @@
 #include <eir/converter.hh>
 #include <map>
 #include <string>
-#include <variant>
 
 namespace eir {
 template <typename OS> class xml_writer : public converter {
@@ -62,8 +61,8 @@ public:
 
   virtual void
   enter(const char *field,
-        std::map<std::string, std::string> *properties = nullptr) override {
-    this->start_tag(field, properties);
+        std::map<std::string, std::string> *attributes = nullptr) override {
+    this->start_tag(field, attributes);
   }
 
   virtual void leave(const char *field) override { this->end_tag(field); }

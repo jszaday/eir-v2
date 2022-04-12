@@ -1,7 +1,8 @@
-#include <cassert>
-#include <eir/property.hh>
-#include <eir/xml_writer.hh>
 #include <iostream>
+#include <eir/property.hh>
+#include <eir/xml_reader.hh>
+#include <eir/xml_writer.hh>
+#include <sstream>
 #include <memory>
 #include <vector>
 
@@ -60,12 +61,27 @@ int main(void) {
   animals.emplace_back(new canadian_goose);
   animals.emplace_back(new lion);
 
+  std::cout << "the animals say:" << std::endl;
   for (auto& animal : animals) {
     animal->make_noise(std::cout);
   }
 
-  eir::xml_writer w(std::cout);
+  std::stringstream ss;
+
+  eir::xml_writer w(ss);
   w | std::tie("animals", animals);
+
+  auto xml = ss.str();
+  std::cout << xml;
+
+  std::vector<std::unique_ptr<animal>> clones;
+  eir::xml_reader r(xml.c_str());
+  r | std::tie("animals", clones);
+
+  std::cout << "the clones say:" << std::endl;
+  for (auto& animal : clones) {
+    animal->make_noise(std::cout);
+  }
 
   return 0;
 }
